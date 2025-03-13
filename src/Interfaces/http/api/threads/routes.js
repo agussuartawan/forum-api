@@ -1,12 +1,12 @@
-const routes = (handler) => ([
-  {
-    method: 'GET',
-    path: '/threads/get-access-token-claims',
-    options: {
-      auth: "jwt"
+const routes = (handler) => [
+    {
+        method: "GET",
+        path: "/threads/get-access-token-claims",
+        options: {
+            auth: "jwt",
+        },
+        handler: handler.getAccessTokenClaimHandler,
     },
-    handler: handler.getAccessTokenClaimHandler,
-  }
-]);
+]
 
-module.exports = routes;
+module.exports = routes
