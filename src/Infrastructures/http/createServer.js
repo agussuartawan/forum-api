@@ -3,11 +3,32 @@ const ClientError = require('../../Commons/exceptions/ClientError');
 const DomainErrorTranslator = require('../../Commons/exceptions/DomainErrorTranslator');
 const users = require('../../Interfaces/http/api/users');
 const authentications = require('../../Interfaces/http/api/authentications');
+const threads = require('../../Interfaces/http/api/threads');
+const config = require('../../Commons/config');
+const Jwt = require("@hapi/jwt")
 
 const createServer = async (container) => {
   const server = Hapi.server({
-    host: process.env.HOST,
-    port: process.env.PORT,
+    host: config.app.host,
+    port: config.app.port,
+  });
+
+  await server.register(Jwt)
+  // Mendefinisikan strategi autentikasi JWT
+  server.auth.strategy('jwt', 'jwt', {
+    keys: config.secret.accessTokenKey,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      nbf: true,
+      exp: true,
+      maxAgeSec: 14400, // 4 jam
+      timeSkewSec: 15
+    },
+    validate: (artifacts, request, h) => {
+      return { isValid: true, credentials: artifacts.decoded.payload };
+    }
   });
 
   await server.register([
@@ -19,6 +40,10 @@ const createServer = async (container) => {
       plugin: authentications,
       options: { container },
     },
+    {
+      plugin: threads,
+      options: { container },
+    }
   ]);
 
   server.ext('onPreResponse', (request, h) => {

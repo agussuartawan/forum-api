@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const dotenv = require("dotenv")
 const path = require("path")
 
@@ -25,6 +26,11 @@ const config = {
                 ? { request: ["error"] }
                 : {},
     },
+    secret: {
+        accessTokenKey: process.env.ACCESS_TOKEN_KEY,
+        refreshTokenKey: process.env.REFRESH_TOKEN_KEY,
+        accessTokenAge: process.env.ACCESS_TOKEN_AGE,
+    }
 }
 
 module.exports = config
