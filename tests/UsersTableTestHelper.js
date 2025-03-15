@@ -1,5 +1,7 @@
 /* istanbul ignore file */
 const pool = require("../src/Infrastructures/database/postgres/pool")
+const Jwt = require("@hapi/jwt")
+const config = require("../src/Commons/config")
 
 const UsersTableTestHelper = {
     async addUser({
@@ -14,6 +16,13 @@ const UsersTableTestHelper = {
         }
 
         await pool.query(query)
+
+        const token = Jwt.token.generate(
+            { id, username },
+            config.secret.accessTokenKey,
+        )
+
+        return token
     },
 
     async findUsersById(id) {

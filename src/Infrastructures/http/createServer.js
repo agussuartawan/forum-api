@@ -11,6 +11,7 @@ const createServer = async (container) => {
     const server = Hapi.server({
         host: config.app.host,
         port: config.app.port,
+        debug: { log: ["error", "info"] },
     })
 
     await server.register(Jwt)

@@ -9,6 +9,8 @@ const UserTableTestHelper = require("../../../../tests/UsersTableTestHelper")
 describe("ThreadRepositoryPostgres", () => {
     afterEach(async () => {
         await ThreadTableTestHelper.cleanTable()
+        await UserTableTestHelper.cleanTable()
+        await ThreadCommentTableTestHelper.cleanTable()
     })
 
     afterAll(async () => {
@@ -67,9 +69,11 @@ describe("ThreadRepositoryPostgres", () => {
             const threads = await ThreadTableTestHelper.findThreadById(
                 addedThread.id,
             )
+
             expect(threads).toHaveLength(1)
             expect(threads[0].title).toEqual(newThread.title)
             expect(threads[0].body).toEqual(newThread.body)
+            expect(threads[0].owner_id).toEqual("user-123")
         })
     })
 

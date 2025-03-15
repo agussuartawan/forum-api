@@ -23,8 +23,8 @@ const config = {
         port: process.env.PORT,
         debug:
             process.env.NODE_ENV === "development"
-                ? { request: ["error"] }
-                : {},
+                ? { request: ["error", "uncaught"], log: ["error", "info"] }
+                : { log: ["error", "info"] },
     },
     secret: {
         accessTokenKey: process.env.ACCESS_TOKEN_KEY,
