@@ -1,21 +1,18 @@
 /* istanbul ignore file */
 const pool = require("../src/Infrastructures/database/postgres/pool")
-const threadTableTestHelper = require("ThreadsTableTestHelper")
-const usersTableTestHelper = require("UsersTableTestHelper")
 
 const ThreadCommentsTableTestHelper = {
     async addComment({
         id = "comment-123",
         threadId = "thread-123",
         ownerId = "user-1234",
+        parentId = null,
         content = "Cepat beritahu aku caranya",
+        date = new Date(),
     }) {
-        await threadTableTestHelper.addThread({ id: threadId })
-        await usersTableTestHelper.addUser({ id: ownerId })
-
         const query = {
-            text: "INSERT INTO thread_comments VALUES($1, $2, $3, $4)",
-            values: [id, threadId, ownerId, content],
+            text: "INSERT INTO thread_comments VALUES($1, $2, $3, $4, $5, $6)",
+            values: [id, threadId, ownerId, parentId, content, date],
         }
 
         await pool.query(query)
