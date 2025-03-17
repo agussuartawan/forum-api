@@ -52,6 +52,46 @@ describe("ThreadCommentRepositoryPostgres", () => {
         })
     })
 
+    describe("addCommentReply function", () => {
+        it("should persist new comment reply and return it correctly", async () => {
+            await UserTableTestHelper.addUser({})
+            await ThreadTableTestHelper.addThread({})
+            await ThreadCommentTableTestHelper.addComment({
+                id: "comment-123",
+                ownerId: "user-123",
+            })
+            const newReply = {
+                ownerId: "user-123",
+                threadId: "thread-123",
+                commentId: "comment-123",
+                content: "New reply",
+            }
+            const commentRepository = new ThreadCommentRepositoryPostgres(
+                pool,
+                () => "123",
+            )
+
+            const addedReply = await commentRepository.addCommentReply(newReply)
+
+            const reply = await commentRepository.getCommentReplyById(
+                newReply.threadId,
+                newReply.commentId,
+                addedReply.id,
+            )
+
+            expect(addedReply).toStrictEqual(
+                new AddedComment({
+                    id: "reply-123",
+                    content: "New reply",
+                    owner: "user-123",
+                }),
+            )
+            expect(reply.id).toEqual("reply-123")
+            expect(reply.content).toEqual(newReply.content)
+            expect(reply.owner_id).toEqual(newReply.ownerId)
+        })
+    })
+
     describe("deleteThreadComment function", () => {
         it("should soft delete comment correctly", async () => {
             await UserTableTestHelper.addUser({
@@ -77,6 +117,38 @@ describe("ThreadCommentRepositoryPostgres", () => {
                 )
 
             expect(comment.id).toEqual("comment-123")
+            expect(comment.deleted_at).not.toBeNull()
+        })
+    })
+
+    describe("deleteCommentReply function", () => {
+        it("should soft delete comment correctly reply", async () => {
+            await UserTableTestHelper.addUser({
+                id: "user-1234",
+                username: "kowo",
+            })
+            await ThreadTableTestHelper.addThread({
+                id: "thread-123",
+                ownerId: "user-1234",
+            })
+            await ThreadCommentTableTestHelper.addComment({
+                threadId: "thread-123",
+            })
+            await ThreadCommentTableTestHelper.addComment({
+                id: "reply-123",
+                parentId: "comment-123",
+            })
+            const commentRepositoryPostgres =
+                new ThreadCommentRepositoryPostgres(pool, {})
+
+            await commentRepositoryPostgres.deleteCommentReply("reply-123")
+            const comment = await commentRepositoryPostgres.getCommentReplyById(
+                "thread-123",
+                "comment-123",
+                "reply-123",
+            )
+
+            expect(comment.id).toEqual("reply-123")
             expect(comment.deleted_at).not.toBeNull()
         })
     })

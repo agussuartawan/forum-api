@@ -53,13 +53,32 @@ class ThreadRepositoryPostgres extends ThreadRepository {
                                 'id', c.id,
                                 'content', CASE WHEN c.deleted_at IS NOT NULL THEN '**komentar telah dihapus**' ELSE c.content END,
                                 'date', c.created_at,
-                                'username', uc.username
+                                'username', uc.username,
+                                'replies', (
+                                    SELECT COALESCE(
+                                       json_agg(
+                                           json_build_object(
+                                               'id', r.id,
+                                               'content',
+                                                CASE
+                                                   WHEN r.deleted_at IS NOT NULL THEN '**balasan telah dihapus**'
+                                                   ELSE r.content
+                                                END,
+                                               'date', r.created_at,
+                                               'username', ur.username
+                                           ) ORDER BY r.created_at ASC
+                                       ), '[]'
+                                    )
+                                    FROM thread_comments r
+                                    LEFT JOIN users ur ON r.owner_id = ur.id
+                                    WHERE r.parent_id = c.id
+                                )
                             ) ORDER BY c.created_at ASC
                         ) FILTER (WHERE c.id IS NOT NULL), '[]'
                     ) AS comments
                 FROM threads t
                 LEFT JOIN users u ON t.owner_id = u.id
-                LEFT JOIN thread_comments c ON t.id = c.thread_id
+                LEFT JOIN thread_comments c ON t.id = c.thread_id AND c.parent_id IS NULL
                 LEFT JOIN users uc ON c.owner_id = uc.id
                 WHERE t.id = $1
                 GROUP BY t.id, u.username
@@ -76,13 +95,19 @@ class ThreadRepositoryPostgres extends ThreadRepository {
             id: thread.id,
             title: thread.title,
             body: thread.body,
-            date: new Date(thread.date), // Konversi ke Date object
+            date: new Date(thread.date),
             username: thread.username,
             comments: thread.comments.map((comment) => ({
                 id: comment.id,
                 content: comment.content,
-                date: new Date(comment.date), // Konversi ke Date object
+                date: new Date(comment.date),
                 username: comment.username,
+                replies: comment.replies.map((reply) => ({
+                    id: reply.id,
+                    content: reply.content,
+                    date: new Date(reply.date),
+                    username: reply.username,
+                })),
             })),
         }
     }

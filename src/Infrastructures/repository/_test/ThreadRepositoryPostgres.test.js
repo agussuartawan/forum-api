@@ -107,6 +107,14 @@ describe("ThreadRepositoryPostgres", () => {
                 content: "new comment",
                 date,
             })
+            await ThreadCommentTableTestHelper.addComment({
+                id: "reply-123",
+                threadId: "thread-123",
+                ownerId: "user-123kowo",
+                content: "new reply",
+                parentId: "comment-123",
+                date,
+            })
             const threadRepositoryPostgres = new ThreadRepositoryPostgres(
                 pool,
                 {},
@@ -127,6 +135,14 @@ describe("ThreadRepositoryPostgres", () => {
                         content: "new comment",
                         date,
                         username: "kowo_kuwu",
+                        replies: [
+                            {
+                                id: "reply-123",
+                                content: "new reply",
+                                date,
+                                username: "kowo_kuwu",
+                            },
+                        ],
                     },
                 ],
             })

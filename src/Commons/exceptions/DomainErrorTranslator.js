@@ -39,7 +39,7 @@ DomainErrorTranslator._directories = {
         "komentar tidak ditemukan",
     ),
     "THREAD_COMMENT_USE_CASE.FORBIDDEN": new AuthorizationError(
-        "anda tidak berhak mengakses resource ini",
+        "anda tidak berhak menghapus komentar ini",
     ),
     "NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY": new InvariantError(
         "payload tidak valid",
@@ -52,6 +52,15 @@ DomainErrorTranslator._directories = {
     "NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION": new InvariantError(
         "payload tidak valid",
     ),
+    "COMMENT_REPLY.REPLY_NOT_FOUND": new NotFoundError("reply tidak ditemukan"),
+    "COMMENT_REPLY.FORBIDDEN": new AuthorizationError(
+        "anda tidak berhak menghapus balasan ini",
+    ),
+    "NEW_COMMENT_REPLY.NOT_CONTAIN_NEEDED_PROPERTY": new InvariantError(
+        "payload tidak valid",
+    ),
+    "NEW_COMMENT_REPLY.DID_NOT_MATCH_DATA_TYPE_SPECIFICATION":
+        new InvariantError("payload tidak valid"),
 }
 
 module.exports = DomainErrorTranslator

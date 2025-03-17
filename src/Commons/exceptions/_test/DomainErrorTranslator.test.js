@@ -53,7 +53,7 @@ describe("DomainErrorTranslator", () => {
                 new Error("THREAD_COMMENT_USE_CASE.FORBIDDEN"),
             ),
         ).toStrictEqual(
-            new AuthorizationError("anda tidak berhak mengakses resource ini"),
+            new AuthorizationError("anda tidak berhak menghapus komentar ini"),
         )
     })
 

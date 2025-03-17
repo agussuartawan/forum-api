@@ -81,6 +81,7 @@ describe("/threads endpoint", () => {
                         username: "kowo",
                         date: date.toISOString(),
                         content: "Cepat beritahu aku caranya",
+                        replies: [],
                     },
                 ],
             })

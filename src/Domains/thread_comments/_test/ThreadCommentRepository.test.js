@@ -27,5 +27,23 @@ describe("ThreadCommentRepository", () => {
         ).rejects.toThrowError(
             "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
         )
+
+        await expect(
+            commentRepository.addCommentReply(""),
+        ).rejects.toThrowError(
+            "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
+        )
+
+        await expect(
+            commentRepository.deleteCommentReply(""),
+        ).rejects.toThrowError(
+            "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
+        )
+
+        await expect(
+            commentRepository.getCommentReplyById(""),
+        ).rejects.toThrowError(
+            "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
+        )
     })
 })

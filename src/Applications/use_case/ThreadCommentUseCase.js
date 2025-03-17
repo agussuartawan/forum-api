@@ -35,6 +35,40 @@ class ThreadCommentUseCase {
 
         await this._commentRepository.deleteThreadComment(id)
     }
+
+    async addCommentReply(payload) {
+        const { threadId, commentId, content } = payload
+        if (!content) {
+            throw new Error("NEW_COMMENT_REPLY.NOT_CONTAIN_NEEDED_PROPERTY")
+        }
+        if (typeof content !== "string") {
+            throw new Error(
+                "NEW_COMMENT_REPLY.DID_NOT_MATCH_DATA_TYPE_SPECIFICATION",
+            )
+        }
+
+        await this._threadRepository.verifyThread(threadId) // will throw NotFoundException if threadId doesn't exists
+        await this._commentRepository.verifyThreadComment(commentId) // will throw NotFoundException if commentId doesn't exists
+
+        return this._commentRepository.addCommentReply(payload)
+    }
+
+    async deleteCommentReply(loggedUserId, threadId, commentId, id) {
+        const reply = await this._commentRepository.getCommentReplyById(
+            threadId,
+            commentId,
+            id,
+        )
+        if (!reply) {
+            throw new Error("COMMENT_REPLY.REPLY_NOT_FOUND")
+        }
+
+        if (reply.owner_id !== loggedUserId) {
+            throw new Error("COMMENT_REPLY.FORBIDDEN")
+        }
+
+        await this._commentRepository.deleteCommentReply(id)
+    }
 }
 
 module.exports = ThreadCommentUseCase

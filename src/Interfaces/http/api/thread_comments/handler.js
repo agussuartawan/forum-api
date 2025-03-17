@@ -6,6 +6,8 @@ class ThreadCommentHandler {
 
         this.postThreadComment = this.postThreadComment.bind(this)
         this.deleteThreadComment = this.deleteThreadComment.bind(this)
+        this.postCommentReply = this.postCommentReply.bind(this)
+        this.deleteCommentReply = this.deleteCommentReply.bind(this)
     }
 
     async postThreadComment(request, h) {
@@ -38,6 +40,50 @@ class ThreadCommentHandler {
         )
 
         await commentUseCase.deleteThreadComment(ownerId, threadId, commentId)
+
+        const response = h.response({
+            status: "success",
+        })
+        response.code(200)
+        return response
+    }
+
+    async postCommentReply(request, h) {
+        const { id: ownerId } = request.auth.credentials
+        const { threadId, commentId } = request.params
+
+        const commentUseCase = this._container.getInstance(
+            ThreadCommentUseCase.name,
+        )
+        const addedReply = await commentUseCase.addCommentReply({
+            ownerId: ownerId,
+            content: request.payload.content,
+            threadId: threadId,
+            commentId: commentId,
+        })
+
+        const response = h.response({
+            status: "success",
+            data: { addedReply },
+        })
+        response.code(201)
+        return response
+    }
+
+    async deleteCommentReply(request, h) {
+        const { id: ownerId } = request.auth.credentials
+        const { threadId, commentId, replyId } = request.params
+
+        const commentUseCase = this._container.getInstance(
+            ThreadCommentUseCase.name,
+        )
+
+        await commentUseCase.deleteCommentReply(
+            ownerId,
+            threadId,
+            commentId,
+            replyId,
+        )
 
         const response = h.response({
             status: "success",

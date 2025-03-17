@@ -59,6 +59,46 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
 
         return result.rows[0]
     }
+
+    async addCommentReply(payload) {
+        const { ownerId, threadId, commentId, content } = payload
+        const id = `reply-${this._idGenerator()}`
+        const query = {
+            text: "INSERT INTO thread_comments VALUES($1, $2, $3, $4, $5) RETURNING id, content, owner_id",
+            values: [id, threadId, ownerId, commentId, content],
+        }
+
+        const result = await this._pool.query(query)
+
+        return new AddedComment({
+            id: result.rows[0].id,
+            content: result.rows[0].content,
+            owner: result.rows[0].owner_id,
+        })
+    }
+
+    async deleteCommentReply(id) {
+        const query = {
+            text: "UPDATE thread_comments SET deleted_at = now() WHERE id = $1",
+            values: [id],
+        }
+
+        await this._pool.query(query)
+    }
+
+    async getCommentReplyById(threadId, commentId, id) {
+        const query = {
+            text: "SELECT * FROM thread_comments WHERE id = $1 AND thread_id = $2 AND parent_id = $3",
+            values: [id, threadId, commentId],
+        }
+
+        const result = await this._pool.query(query)
+        if (!result.rowCount) {
+            throw new NotFoundError("balasan tidak ditemukan")
+        }
+
+        return result.rows[0]
+    }
 }
 
 module.exports = ThreadCommentRepositoryPostgres
