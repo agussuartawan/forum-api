@@ -50,4 +50,43 @@ describe("ThreadUseCase", () => {
             expect(NewThread).toHaveBeenCalledTimes(1)
         })
     })
+
+    describe("getThreadDetail function", () => {
+        it("should orchestrating the getThreadDetail correctly", async () => {
+            const date = new Date()
+            const mockThreadRepository = new ThreadRepository()
+            const mockThreadDetail = {
+                id: "thread-123",
+                title: "Cara mencari jodoh",
+                body: "Menurut anda bagaimana?",
+                date: date.toISOString(),
+                username: "kowo",
+                comments: [
+                    {
+                        id: "comment-123",
+                        username: "kowo",
+                        date: date.toISOString(),
+                        content: "Cepat beritahu aku caranya",
+                    },
+                ],
+            }
+
+            // mock needed function
+            mockThreadRepository.getThreadDetail = jest.fn(() =>
+                Promise.resolve(mockThreadDetail),
+            )
+            const threadUseCase = new ThreadUseCase({
+                threadRepository: mockThreadRepository,
+            })
+
+            // Action
+            const threadDetail =
+                await threadUseCase.getThreadDetail("thread-123")
+
+            expect(threadDetail).toStrictEqual(mockThreadDetail)
+            expect(mockThreadRepository.getThreadDetail).toBeCalledWith(
+                "thread-123",
+            )
+        })
+    })
 })

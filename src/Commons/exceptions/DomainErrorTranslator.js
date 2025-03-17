@@ -1,4 +1,6 @@
 const InvariantError = require("./InvariantError")
+const NotFoundError = require("./NotFoundError")
+const AuthorizationError = require("./AuthorizationError")
 
 const DomainErrorTranslator = {
     translate(error) {
@@ -33,6 +35,23 @@ DomainErrorTranslator._directories = {
         new InvariantError("harus mengirimkan token refresh"),
     "DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION":
         new InvariantError("refresh token harus string"),
+    "THREAD_COMMENT_USE_CASE.COMMENT_NOT_FOUND": new NotFoundError(
+        "komentar tidak ditemukan",
+    ),
+    "THREAD_COMMENT_USE_CASE.FORBIDDEN": new AuthorizationError(
+        "anda tidak berhak mengakses resource ini",
+    ),
+    "NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY": new InvariantError(
+        "payload tidak valid",
+    ),
+    "NEW_THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY": new InvariantError(
+        "payload tidak valid",
+    ),
+    "NEW_THREAD_COMMENT.DID_NOT_MATCH_DATA_TYPE_SPECIFICATION":
+        new InvariantError("payload tidak valid"),
+    "NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION": new InvariantError(
+        "payload tidak valid",
+    ),
 }
 
 module.exports = DomainErrorTranslator

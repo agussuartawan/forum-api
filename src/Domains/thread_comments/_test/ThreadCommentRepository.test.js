@@ -2,20 +2,28 @@ const ThreadCommentRepository = require("../ThreadCommentRepository")
 
 describe("ThreadCommentRepository", () => {
     it("should throw error when invoke abstract behaviour", async () => {
-        const threadRepository = new ThreadCommentRepository()
+        const commentRepository = new ThreadCommentRepository()
 
         await expect(
-            threadRepository.addThreadComment({}),
+            commentRepository.addThreadComment({}),
         ).rejects.toThrowError(
             "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
         )
+
         await expect(
-            threadRepository.deleteThreadComment(""),
+            commentRepository.deleteThreadComment(""),
         ).rejects.toThrowError(
             "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
         )
+
         await expect(
-            threadRepository.verifyThreadComment(""),
+            commentRepository.verifyThreadComment(""),
+        ).rejects.toThrowError(
+            "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
+        )
+
+        await expect(
+            commentRepository.getThreadCommentById(""),
         ).rejects.toThrowError(
             "THREAD_COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED",
         )

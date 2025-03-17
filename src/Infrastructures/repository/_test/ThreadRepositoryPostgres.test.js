@@ -1,7 +1,7 @@
 const ThreadRepositoryPostgres = require(`../ThreadRepositoryPostgres`)
 const ThreadTableTestHelper = require("../../../../tests/ThreadsTableTestHelper")
 const pool = require("../../database/postgres/pool")
-const InvariantError = require("../../../Commons/exceptions/InvariantError")
+const NotFoundError = require("../../../Commons/exceptions/NotFoundError")
 const NewThread = require("../../../Domains/threads/entities/NewThread")
 const ThreadCommentTableTestHelper = require("../../../../tests/ThreadCommentsTableTestHelper")
 const UserTableTestHelper = require("../../../../tests/UsersTableTestHelper")
@@ -18,7 +18,7 @@ describe("ThreadRepositoryPostgres", () => {
     })
 
     describe("verifyThread functions", () => {
-        it("should throw InvariantError when thread not exists", async () => {
+        it("should throw NotFoundError when thread not exists", async () => {
             const threadRepositoryPostgres = new ThreadRepositoryPostgres(
                 pool,
                 {},
@@ -26,10 +26,10 @@ describe("ThreadRepositoryPostgres", () => {
 
             await expect(
                 threadRepositoryPostgres.verifyThread("thread-123"),
-            ).rejects.toThrowError(InvariantError)
+            ).rejects.toThrowError(NotFoundError)
         })
 
-        it("should not throw InvariantError when thread exists", async () => {
+        it("should not throw NotFoundError when thread exists", async () => {
             await UserTableTestHelper.addUser({
                 id: "user-1234",
                 username: "kowo",
@@ -45,7 +45,7 @@ describe("ThreadRepositoryPostgres", () => {
 
             await expect(
                 threadRepositoryPostgres.verifyThread("thread-123"),
-            ).resolves.not.toThrowError(InvariantError)
+            ).resolves.not.toThrowError(NotFoundError)
         })
     })
 
@@ -78,7 +78,7 @@ describe("ThreadRepositoryPostgres", () => {
     })
 
     describe("getThreadDetail functions", () => {
-        it("should throw InvariantError when thread not exists", async () => {
+        it("should throw NotFoundError when thread not exists", async () => {
             const threadRepositoryPostgres = new ThreadRepositoryPostgres(
                 pool,
                 {},
@@ -86,7 +86,7 @@ describe("ThreadRepositoryPostgres", () => {
 
             await expect(
                 threadRepositoryPostgres.getThreadDetail("thread-123"),
-            ).rejects.toThrowError(InvariantError)
+            ).rejects.toThrowError(NotFoundError)
         })
 
         it("should return thread correctly", async () => {

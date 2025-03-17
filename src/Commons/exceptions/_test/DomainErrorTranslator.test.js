@@ -1,5 +1,7 @@
 const DomainErrorTranslator = require("../DomainErrorTranslator")
 const InvariantError = require("../InvariantError")
+const NotFoundError = require("../NotFoundError")
+const AuthorizationError = require("../AuthorizationError")
 
 describe("DomainErrorTranslator", () => {
     it("should translate error correctly", () => {
@@ -40,6 +42,18 @@ describe("DomainErrorTranslator", () => {
             new InvariantError(
                 "tidak dapat membuat user baru karena username mengandung karakter terlarang",
             ),
+        )
+        expect(
+            DomainErrorTranslator.translate(
+                new Error("THREAD_COMMENT_USE_CASE.COMMENT_NOT_FOUND"),
+            ),
+        ).toStrictEqual(new NotFoundError("komentar tidak ditemukan"))
+        expect(
+            DomainErrorTranslator.translate(
+                new Error("THREAD_COMMENT_USE_CASE.FORBIDDEN"),
+            ),
+        ).toStrictEqual(
+            new AuthorizationError("anda tidak berhak mengakses resource ini"),
         )
     })
 

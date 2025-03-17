@@ -17,12 +17,10 @@ const UsersTableTestHelper = {
 
         await pool.query(query)
 
-        const token = Jwt.token.generate(
+        return Jwt.token.generate(
             { id, username },
             config.secret.accessTokenKey,
         )
-
-        return token
     },
 
     async findUsersById(id) {

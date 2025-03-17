@@ -1,6 +1,6 @@
-const InvariantError = require("../../Commons/exceptions/InvariantError")
 const AddedThread = require("../../Domains/threads/entities/AddedThread")
 const ThreadRepository = require("../../Domains/threads/ThreadRepository")
+const NotFoundError = require("../../Commons/exceptions/NotFoundError")
 
 class ThreadRepositoryPostgres extends ThreadRepository {
     constructor(pool, idGenerator) {
@@ -16,7 +16,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
         }
         const result = await this._pool.query(query)
         if (!result.rowCount) {
-            throw new InvariantError("thread tidak ditemukan")
+            throw new NotFoundError("thread tidak ditemukan")
         }
     }
 
@@ -51,10 +51,10 @@ class ThreadRepositoryPostgres extends ThreadRepository {
                         json_agg(
                             json_build_object(
                                 'id', c.id,
-                                'content', c.content,
+                                'content', CASE WHEN c.deleted_at IS NOT NULL THEN '**komentar telah dihapus**' ELSE c.content END,
                                 'date', c.created_at,
                                 'username', uc.username
-                            )
+                            ) ORDER BY c.created_at ASC
                         ) FILTER (WHERE c.id IS NOT NULL), '[]'
                     ) AS comments
                 FROM threads t
@@ -68,7 +68,7 @@ class ThreadRepositoryPostgres extends ThreadRepository {
         }
         const result = await this._pool.query(query)
         if (!result.rowCount) {
-            throw new InvariantError("thread tidak ditemukan")
+            throw new NotFoundError("thread tidak ditemukan")
         }
 
         const thread = result.rows[0]

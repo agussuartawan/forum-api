@@ -9,6 +9,10 @@ class ThreadUseCase {
         const newThread = new NewThread(useCasePayload)
         return this._threadRepository.addThread(ownerId, newThread)
     }
+
+    async getThreadDetail(id) {
+        return this._threadRepository.getThreadDetail(id)
+    }
 }
 
 module.exports = ThreadUseCase
